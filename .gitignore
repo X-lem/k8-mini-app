@@ -1,0 +1,3 @@
+# Ignore some root files
+*.code-workspace
+Personal.MD

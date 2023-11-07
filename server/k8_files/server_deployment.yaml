@@ -1,0 +1,29 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: k8-mini-app-server
+spec:
+  replicas: 2 # This should be at least 2 if you want to see the /pod route working
+  selector:
+    matchLabels:
+      app: k8-mini-app-server
+  template:
+    metadata:
+      labels:
+        app: k8-mini-app-server
+    spec:
+      containers:
+        - name: server
+          image:  # your image here
+          ports:
+            - containerPort: 8080
+          env:
+            # Import variable from the pods
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  # this gets the pod name so we can return it via the /pod route
+                  fieldPath: metadata.name
+          envFrom:
+            - secretRef:  
+                name: server-secrets
