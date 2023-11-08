@@ -2,7 +2,7 @@
 
 This is a simple golang application that can be deployed to any site that supports Kubernetes or locally via minikube. It is meant to be a simple example and that can help you get your feet wet in the world of Docker and Kubernetes. Feel free to fork it. Making changes and tinkering with this simple example will help you to learn and understand Kubernetes.
 
-You'll notice a `Personal.MD` is listed as untracked in the `.gitignore`. You can create/use this file to keep all your commands for easy copy/paste so you don't accidentally commit them.
+You'll notice a `personal.md` is listed as untracked in the `.gitignore`. You can create/use this file to keep all your commands for easy copy/paste so you don't accidentally commit them.
 
 
 ### Resources
@@ -140,4 +140,5 @@ Here is how you can update and add to the `main.go` file.
     - eg. `kubectl set image deployment k8-mini-app-server server=us-west2-docker.pkg.dev/my_project/my_repository/k8-mini-app:latest`
     - Using `latest` for the tag here is the important part. This will make sure it looks at the newest image.
     - The `<deployment_name>` and `<container_name>` are what we specified in the `server_deployment.yaml` file.
+    - This doesn't seem to be 100% consistent (probably because the tag isn't changing). If it doesn't work you can restart the deployment: `kubectl rollout restart deployment k8-mini-app-server`
 5. It will be a few seconds to update the pods
