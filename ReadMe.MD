@@ -61,15 +61,16 @@ This section assumes you've got google cli working locally
     }
     ```
 3. Tag your docker image
-    - `docker tag <SOURCE-IMAGE> <region>-docker.pkg.dev/<PROJECT_ID>/<repository_ID>/<image-name>`
+    - `docker tag <source-image> <region>-docker.pkg.dev/<project_id>/<repository_id>/<image-name>`
     - Eg: `docker tag k8-mini-app us-west2-docker.pkg.dev/my_project/my_repository/k8-mini-app`
     - In the future you can just use this image name when you build your docker image (step 1 of server)
+    - **For simplicity in the future I'll refer to the full gCloud image name (*`<region>-docker.pkg.dev/<project_id>/<repository_id>/<image-name>`*) as `<gcloud-image_name>`**
 4. Push to gCloud
-    - `docker push <gcr-image-name>`
+    - `docker push <gcloud-image_name>`
     - Eg: `docker push us-west2-docker.pkg.dev/my_project/my_repository/k8-mini-app`
 5. Verify it was created
-    - `gcloud artifacts docker images <LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID>`
-    - Eg: `gcloud artifacts docker images us-west2-docker.pkg.dev/my_project/my_repository`
+    - `gcloud artifacts docker images list <region>-docker.pkg.dev/<project_id>/<repository_id>`
+    - Eg: `gcloud artifacts docker images list us-west2-docker.pkg.dev/my_project/my_repository`
     - You can also view it online in the Artifact Registry
 
 ## Create Deployment
@@ -84,7 +85,7 @@ This section assumes you've got google cli working locally
     - Optionally you can deploy the whole folder via: `kubectl apply -f server/k8_files/`
 3. To later delete the k8 objects in gCloud you can run the same commands but change `apply` -> `delete`
 
-### Explination
+### Explanation
 
 - The `server_deployment.yaml` is what will actually create + deploy the k8-mini-app in gCloud. It determines how many pods will be created, what image and port is to be used, and any non-sensitive environment variables you want. Feel free to add more.
 - The `server_loadbalancer.yaml` is what makes the deployment publicly accessible.
@@ -125,13 +126,18 @@ k8-mini-app-server-594f55947b-psvbh
 
 ## Making Changes
 
-Here is how you can update and add to the main.go file. There is probably a better way to do this... but this is what I got.
+Here is how you can update and add to the `main.go` file.
 
-1. Make changes to go app
+1. Make changes to the Go app
 2. Build docker image
+    - `docker build --tag <gcloud-image_name> .`
     - eg. `docker build --tag us-west2-docker.pkg.dev/my_project/my_repository/k8-mini-app .`
 3. Push to gCloud
+    - eg. `docker push <gcloud-image_name>`
     - eg. `docker push us-west2-docker.pkg.dev/my_project/my_repository/k8-mini-app`
-4. Restart pod (this is so that the pods will look to the newly pushed image)
-    - `kubectl rollout restart deployment k8-mini-app-server`
-5. It will be a few seconds to create the new pods/terminate the old ones
+4. Update deployment image
+    - `kubectl set image deployment <deployment_name> <container_name>=<gcloud-image_name>:<tag>`
+    - eg. `kubectl set image deployment k8-mini-app-server server=us-west2-docker.pkg.dev/my_project/my_repository/k8-mini-app:latest`
+    - Using `latest` for the tag here is the important part. This will make sure it looks at the newest image.
+    - The `<deployment_name>` and `<container_name>` are what we specified in the `server_deployment.yaml` file.
+5. It will be a few seconds to update the pods
