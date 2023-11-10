@@ -15,6 +15,17 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger) // This will log the requests so you can see them coming in!
 
+	setupRoutes(r)
+
+	log.Println("k8-mini-app started")
+	http.ListenAndServe(":8080", r)
+}
+
+func setupRoutes(r *chi.Mux) {
+	routes01(r)
+}
+
+func routes01(r *chi.Mux) {
 	// Create a few simple routes
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, From K8 Mini App ouo <3")
@@ -44,7 +55,4 @@ func main() {
 
 		json.NewEncoder(w).Encode(&v)
 	})
-
-	log.Println("k8-mini-app started")
-	http.ListenAndServe(":8080", r)
 }
