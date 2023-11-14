@@ -1,3 +1,7 @@
+# Version 01
+
+Very basic setup with only a few routes
+
 | route    | http method | Request | Response                            | Other info                                  |
 | -------- | ----------- | ------- | ----------------------------------- | ------------------------------------------- |
 | /        | GET         |         | _simple hello response_             |                                             |

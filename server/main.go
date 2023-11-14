@@ -1,58 +1,35 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
-	"os"
 
+	"github.com/X-lem/k8-app/server/routes"
+	"github.com/X-lem/k8-app/server/shared"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/jackc/pgx/v5"
 )
 
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger) // This will log the requests so you can see them coming in!
 
-	setupRoutes(r)
+	// Attempt to get the DB
+	db := shared.GetDB()
 
+	// Setup all the routes we can
+	setupRoutes(r, db)
+
+	// Start the application
 	log.Println("k8-mini-app started")
 	http.ListenAndServe(":8080", r)
 }
 
-func setupRoutes(r *chi.Mux) {
-	routes01(r)
-}
+func setupRoutes(r *chi.Mux, db *pgx.Conn) {
+	routes.Routes01(r)
 
-func routes01(r *chi.Mux) {
-	// Create a few simple routes
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, From K8 Mini App ouo <3")
-	})
-
-	r.Get("/pod", func(w http.ResponseWriter, r *http.Request) {
-		// Read the pod's name from the Downward API
-		fmt.Fprint(w, os.Getenv("POD_NAME"))
-	})
-
-	r.Get("/secrets", func(w http.ResponseWriter, r *http.Request) {
-		// Get all environment variables
-		env := os.Environ()
-
-		// Iterate over the environment variables and print them
-		fmt.Println("_________________Env Variables_________________")
-		for _, v := range env {
-			fmt.Println(v)
-		}
-		fmt.Println("_________________End_________________")
-
-		// Read the pod's name from the Downward API
-		v := map[string]string{
-			"secret":       os.Getenv("SECRET"),
-			"nestedSecret": os.Getenv("NESTED.SECRET"),
-		}
-
-		json.NewEncoder(w).Encode(&v)
-	})
+	if db != nil {
+		routes.Routes02(r, db)
+	}
 }
