@@ -8,6 +8,5 @@ spec:
     # This selects the deployment to use (thus must match pec.selector.matchLabels.app of the deployment)
     app: k8-mini-app-server
   ports: 
-    - name: http
-      port: 8080 # Service Port
+    - port: 80 # Service Port
       targetPort: 8080 # Container Port

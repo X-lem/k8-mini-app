@@ -114,14 +114,14 @@ replicaset.apps/k8-mini-app-server-594f55947b   2         2         2       6m25
 
 2. The number of pods created will depend on how many you set in the `server/k8_files/01/server_deployment.yaml`
 3. `service/kubernetes` is a default object that will exist pre/post creating/deleting everything
-4. You’ll notice on the service (`service/k8-mini-app-loadbalancer`) that an EXTERNAL-IP was created (takes a few moments). You can now use this to access your application (don’t forget to add the port). You’ll notice if you go to the `/pod` route it will return the name one of the pods! Using `curl` is the best for this as your browser might cache the request and thus return the same response.
+4. You’ll notice on the service (`service/k8-mini-app-loadbalancer`) that an EXTERNAL-IP was created (takes a few moments). You can now use this to access your application. You’ll notice if you go to the `/pod` route it will return the name one of the pods! Using `curl` is the best for this as your browser might cache the request and thus return the same response.
 
 ```
-$ curl http://35.233.156.20:8080
+$ curl http://35.233.156.20
 Hello, From K8 Mini App ouo <3
-$ curl http://35.233.156.20:8080/pod
+$ curl http://35.233.156.20/pod
 k8-mini-app-server-594f55947b-xlb2q
-$ curl http://35.233.156.20:8080/pod
+$ curl http://35.233.156.20/pod
 k8-mini-app-server-594f55947b-psvbh
 ```
 
