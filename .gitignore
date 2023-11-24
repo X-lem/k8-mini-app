@@ -1,3 +1,6 @@
 # Ignore some root files
 *.code-workspace
 personal.md
+
+# Ignore some client files
+client/node_modules

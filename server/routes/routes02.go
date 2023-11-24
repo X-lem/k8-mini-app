@@ -36,6 +36,7 @@ func Routes02(r *chi.Mux, db *pgx.Conn) {
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
 			return
 		}
 
@@ -60,6 +61,7 @@ func Routes02(r *chi.Mux, db *pgx.Conn) {
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
 			return
 		}
 
@@ -77,10 +79,11 @@ func Routes02(r *chi.Mux, db *pgx.Conn) {
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
 			return
 		}
 
-		json.NewEncoder(w).Encode(user)
+		json.NewEncoder(w).Encode(&user)
 	})
 
 	r.Get("/users", func(w http.ResponseWriter, r *http.Request) {
@@ -88,6 +91,7 @@ func Routes02(r *chi.Mux, db *pgx.Conn) {
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
 			return
 		}
 
@@ -102,11 +106,12 @@ func Routes02(r *chi.Mux, db *pgx.Conn) {
 			if err != nil {
 				log.Println(err)
 				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte(err.Error()))
 				return
 			}
 			users = append(users, user)
 		}
 
-		json.NewEncoder(w).Encode(users)
+		json.NewEncoder(w).Encode(&users)
 	})
 }

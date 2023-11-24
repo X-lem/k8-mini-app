@@ -1,0 +1,43 @@
+version: "3"
+services:
+  client:
+    image: k8-mini-app-client
+    build: ./client
+    container_name: k8-mini-app-client-c
+    ports:
+      - "3000:80"
+  server:
+    image: k8-mini-app-server
+    build: ./server
+    container_name: k8-mini-app-server-c
+    # Forces the server service to wait for the db service to be up and running
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SECRET: docker-compose-secret
+      NESTED.SECRET: docker-compose-nested-secret
+      database.password: postgres
+      postgres-service-name: db # like with the server_deployment.yaml file in version 02 this needs to reference the DB service
+    ports:
+      - "8080:8080"
+  db:
+    image: postgres:16.1
+    container_name: k8-mini-app-db-c
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: k8-mini-app
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 20s
+      retries: 5
+    volumes: 
+      - db:/data/postgres
+volumes:
+  db:
+    driver: local
+

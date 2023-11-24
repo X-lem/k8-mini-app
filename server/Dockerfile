@@ -16,7 +16,7 @@ WORKDIR /app
 # Copy executable file from build-stage image into run-stage image
 COPY --from=build-stage /k8-mini-app /k8-mini-app
 
-# Expose port 8080 for the web server
+# Expose port 8080
 EXPOSE 8080
 
 # Run the Go application when the container starts

@@ -8,12 +8,19 @@ import (
 	"github.com/X-lem/k8-app/server/shared"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/jackc/pgx/v5"
 )
 
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger) // This will log the requests so you can see them coming in!
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedMethods:   []string{"GET", "POST"},
+		AllowedHeaders:   []string{"Accept", "Content-Type"},
+		AllowCredentials: true,
+	}))
 
 	// Attempt to get the DB
 	db := shared.GetDB()
