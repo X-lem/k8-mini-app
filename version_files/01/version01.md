@@ -150,3 +150,10 @@ Here is how you can update and add to the `main.go` file.
    - The `<deployment_name>` and `<container_name>` are what we specified in the `server_deployment.yaml` file.
    - This doesn't seem to be 100% consistent (probably because the tag isn't changing). If it doesn't work you can restart the deployment: `kubectl rollout restart deployment k8-mini-app-server`
 5. It will be a few seconds to update the pods
+
+## Suggestions
+
+*Easy*
+- Add new enviroment variables to `server_deployment.yaml`
+- Add new secrets to `server_secrets.yaml`
+- Add an additional route that returns some data.

@@ -77,3 +77,10 @@ To delete the containers you can run `docker-compose down`. You'll get an output
 ```
 
 **WARNING**: This will delete the database along with all its data.
+
+## Suggestions
+*Easy*
+- Add to the client application a way for the user to update/delete a user (hint, you may need to udpate your cors headers)
+
+*Medium*
+- In the `docker-compse.yaml` add a service that create an image via mysql. Update the `main.go` file to connect to this (either instead of postgres or in addition too).

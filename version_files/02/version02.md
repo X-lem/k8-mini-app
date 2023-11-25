@@ -8,7 +8,7 @@
 | /pod          | GET         |                         | _name of the k8 pod_                      |                                             |
 | /secrets      | GET         |                         | _the data in the secrets yaml file_       | Prints out all the env variables to the log |
 | /create-table | POST        |                         | _success message or error will be logged_ | Creates the `users` DB table                |
-| /user         | POST        | { "username": "X-lem" } | _returns the created user_                | Creates a user with the given username     |
+| /user         | POST        | { "username": "X-lem" } | _returns the created user_                | Creates a user with the given username      |
 | /users        | GET         |                         | _returns all the created users_           |                                             |
 
 ## Explanation
@@ -60,3 +60,21 @@ SELECT * FROM Users;
 ```
 
 When you're done you can type `exit` to exit out of the pod. Next feel free to deploy the rest of the `server_*.yaml` files. You should now be able to use the new DB routes (will need to use Postman or something to make the POST requests)
+
+## Suggestions
+
+_Easy_
+
+- Update the golang project to automatically create the `users` table upon start up rather than having to call a route.
+- Add a PATCH route to update a user
+- Add a DELETE route to delete a user
+
+_Difficult_
+
+- Instead of using the `postgres.yaml` to deploy a DB, create a `Cloud SQL` in gCloud and update the `server_deployment.yaml` to reference it instead.
+<details>
+<summary>Hints</summary>
+  
+  - Make sure the Cloud SQL uses a public IP
+  - Add `0.0.0.0/0` as an authorized network to the Cloud SQL. This will allow any computer (including the pods) to connect to the DB.
+</details>
