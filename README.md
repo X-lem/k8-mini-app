@@ -6,4 +6,15 @@ You'll notice a `personal.md` is listed as untracked in the `.gitignore`. You ca
 
 ## Versions
 
-You'll notice this repo has several folders in `./verion_files`. Each version folder builds upon each other. Start with version `01` to get a simple Docker/K8 application up and ready. Each of the version folders relies on the same `main.go` and `Dockerfile` so deploying them will be simple and can be done so by just deploying the desired yaml files. The version folders hold the yaml files that will be needed to deploy that versions functionality (if any). In each of the versions folder there will be a `versionXX.md` file that will show the available routes that version allows as well as any instructions on the specific version. It is recommended to delete all the k8 objects created from one version before deploying the yaml files from another. This will ensure a totally clean deployment.
+You'll notice this repo has several folders in `./verion_files`. Each version folder builds upon each other. Start with version `01` to get a simple Docker/K8 application up and ready. Each of the version folders relies on the same `main.go` and `Dockerfile` so deploying them will be simple and can be done so by just deploying the desired yaml files. The version folders hold the yaml files that will be needed to deploy that versions functionality (if any).
+
+In each of the versions folder there will be a `versionXX.md` file that will show the available routes that version allows as well as any instructions on the specific version. It is recommended to delete all the k8 objects created from one version before deploying the yaml files from another. This will ensure a totally clean deployment.
+
+Some of the versions will have suggestions at the end on things you can add to help you learn.
+
+## Version Overviews
+
+* **1**: Locally build a golang application (server) and run it via docker/kubernetes with minikube.
+* **1.5** Launch the golang application to gCloud kuberbetes
+* **2**: Add a DB
+* **3**: Add the front end (client). Run the application locally via docker

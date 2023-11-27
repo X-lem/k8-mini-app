@@ -3,11 +3,10 @@ apiVersion: apps/v1
 metadata:
   name: k8-mini-app-server
 spec:
-  replicas: 5 # This should be at least 2 if you want to see the /pod route working
+  replicas: 2 # This should be at least 2 if you want to see the /pod route working
   selector:
     matchLabels:
       app: k8-mini-app-server
-  # This template is what the deployment will use to configure the pods
   template:
     metadata:
       labels:
@@ -15,8 +14,8 @@ spec:
     spec:
       containers:
         - name: server
-          image:  k8-mini-app # the name of the image
-          imagePullPolicy: Never # this will ensure that the image is not pulled from docker repo.
+          image:  # your image here
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
@@ -26,7 +25,6 @@ spec:
                 fieldRef:
                   # this gets the pod name so we can return it via the /pod route
                   fieldPath: metadata.name
-          # this references and laods in the data in server_secrets.yaml as envrioment variables
           envFrom:
             - secretRef:  
                 name: server-secrets

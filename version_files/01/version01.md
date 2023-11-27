@@ -1,6 +1,8 @@
 # Version 01
 
-Very basic setup with only a few routes
+Creating a simple kubernetes application and deploying it locally with dock and then minikube.
+
+## Routes
 
 | route    | http method | Request | Response                            | Other info                                  |
 | -------- | ----------- | ------- | ----------------------------------- | ------------------------------------------- |
@@ -8,152 +10,77 @@ Very basic setup with only a few routes
 | /pod     | GET         |         | _name of the k8 pod_                |                                             |
 | /secrets | GET         |         | _the data in the secrets yaml file_ | Prints out all the env variables to the log |
 
+## Section Requirments.
+
+- You'll need to install [docker desktop](https://docs.docker.com/get-docker/) - don't forget to enable kubernetes.
+- You'll also need to install [minikube](https://minikube.sigs.k8s.io/docs/start/) to run k8 locally
+
+If the installation was sucessful you should see `minikube` show up under **Containers** in Docker Desktop. Note, you'll need to run `minikube start`
+
 ## Resources
 
-- Sign up for gCloud
-  - https://cloud.google.com
-- Get gCloud CLI working locally
-  - https://cloud.google.com/sdk/docs/install-sdk
-  - Some step by step guides
-    - mac: https://github.com/stacksimplify/google-kubernetes-engine/blob/main/03-gcloud-cli-install-macos/README.md
-    - windows: https://github.com/stacksimplify/google-kubernetes-engine/blob/main/04-gcloud-cli-install-windowsos/README.md
-- Install Docker
-  - https://docs.docker.com/get-docker/
 - K8 yaml guides
   - https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/
   - https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#workloads-apis (has examples)
 
-## gCloud
+## Running via Docker
 
-1. Create a gCloud account and set up a billing account. You should be given $300 worth of credits (to be used over 3 months).
-2. In gCloud go to the Kubernetes Engine and enable it
-3. Once it's enabled gollow this guide to create a standard k8 cluster:
-   - https://github.com/stacksimplify/google-kubernetes-engine/tree/main/02-Create-GKE-Cluster#step-02-create-standard-gke-cluster
-   - Note: you'll need to active a billing account in order to select **regional** as the location type. It might work keeping it as zonal, but I have not tested this.
-   - After following this my estimated monthly cost for the cluster came to $87.01 USD
-   - To access it locally use the following command: `gcloud container clusters get-credentials <CLUSTER-NAME> --region <REGION> --project <PROJECT-NAME>`
-4. (opt). Set up a budget alert so your CC isn't accidentally charged
-   - Under credits **unselect** the check boxes _Discounts_ & _Promotions and others_. Otherwise the budget alert won't actually happen until after your credits are completely used up.
+The `Dockerfile` is what is used to generate the docker image of the golang code. Take a look through the code/Dockerfile The following instructions
 
-## Server
-
-The `Dockerfile` is what is used to generate the docker image of the golang code. This assumes you have docker installed and it's running. It also assume you're in the `/server` directory.
-
-1. `docker build --tag k8-mini-app .` This will generate a docker file from the `main.go` file
+1. `docker build --tag k8-mini-app /server` (or `docker build --tag k8-mini-app .` if you're in the `/server` directory already) This will generate a docker image from the `main.go` file. We're naming the image `k8-mini-app`.
 2. `docker image ls` should show you a list of images. You should see k8-mini-app there.
 3. `docker run -p 8080:8080 k8-mini-app` This command runs the Docker container locally and maps port 8080 from the container to port 8080 on your host machine (**[host_port]:[container_port]**). Now you can access the app via http://localhost:8080 (via your browser, postman, curl, etc).
 4. `docker ps` will get you information about the container including the name and id
 5. `docker logs --follow <container-id>` will follow the logs of the container
-6. `docker stop <container-name>` to shut down the container
+6. `docker stop <container-name>` to shut down the container.
 
-## Launching to gCloud
+## Running via Minikube
 
-This section assumes you've got google cli working locally
+YAML files are used to configure Kubernetes. Take a look at all of the yaml files in this directory; there should be three. Above in the references are links to the k8 documentation that will help you to understand how they work. All k8 commands start with `kubectl`.
 
-1. Create a gCloud Artifact Registry
-   - Click “Create Repository”
-   - Pick a **name** and **region** (you’ll need these later). The rest can be default (Docker, Standard, Google-managed, Dry run).
-2. You'll need to set up your local env to be able to push to this
-   - `gcloud auth configure-docker <registry-region>-docker.pkg.dev`
+1. `kubectl config get-contexts` will display all the different k8 contexts that exist on your device. It should show the current context.
+2. `kubectl config use-context <context-name>` to switch your context if nessisary (you'll be looking for `docker-desktop` or `minikube`).
+3. There are two ways to deploy the yaml files to minikube.
+   - Individually via `kubectl apply -f version_files/01/<file-name>.yaml`
+   - The entire folder via `kubectl apply -f version_files/01`
+   - Note, you can run the same command after updating the yaml files. K8 will update any changes it finds.
+4. After deploying the files you can run `kubectl get pods` or `kubectl get po` to get a list of all the pods that were created. There should be 5 if you didn't change the `server_deployment.yaml` file.
+5. `kubectl get all` will show all the k8 objects that exist.
+6. Run `kubectl get service` (or `kubectl get svc`). You should see two object. `kubernetes` is one that exists apart from anything we did. You should also see a `k8-mini-app-loadbalancer` service. This is the one that was created from the `server_loadbalancer.yaml` file. This is what allows us to connect to our application (without it we couldn't). The load balancer is what directs traffic to the pods (ie. it splits the requests between the pods). Take a look at the _EXTERNAL-IP_ column. This is the IP address that we can use to access our application (in this case it should be **localhost**).
+7. Access the application using curl. When you access the `/pod` route it'll return the pod that the load balancer directed your request too. These should match up with the pods displayed when you ran `kubectl get po`. Using curl is best to demonstrate this as the browser/postman can be continually directed to the same pod (probably of caching).
+8. Finally to delete the k8 object you created you can run one of the following:
+  - `kubectl delete -f version_files/01/<file-name>.yaml`
+  - `kubectl delete -f version_files/01`
+
    ```
-   Adding credentials for: us-west2-docker.pkg.dev
-   After update, the following will be written to your Docker config file located at [/home/<username>/.docker/config.json]:
-   {
-     "credHelpers": {
-       "us-west2-docker.pkg.dev": "gcloud"
-     }
-   }
+   $ curl http://35.233.156.20
+   Hello, From K8 Mini App ouo <3
+   $ curl http://35.233.156.20/pod
+   k8-mini-app-server-594f55947b-xlb2q
+   $ curl http://35.233.156.20/pod
+   k8-mini-app-server-594f55947b-psvbh
+   ...
+   $ curl localhost/secrets
+   {"nestedSecret":"MyNestedSecret","secret":"MySuperDuperSecret"}
    ```
-3. Tag your docker image
-   - `docker tag <source-image> <region>-docker.pkg.dev/<project_id>/<repository_id>/<image-name>`
-   - Eg: `docker tag k8-mini-app us-west2-docker.pkg.dev/my_project/my_repository/k8-mini-app`
-   - In the future you can just use this image name when you build your docker image (step 1 of server)
-   - **For simplicity in the future I'll refer to the full gCloud image name (_`<region>-docker.pkg.dev/<project_id>/<repository_id>/<image-name>`_) as `<gcloud-image_name>`**
-4. Push to gCloud
-   - `docker push <gcloud-image_name>`
-   - Eg: `docker push us-west2-docker.pkg.dev/my_project/my_repository/k8-mini-app`
-5. Verify it was created
-   - `gcloud artifacts docker images list <region>-docker.pkg.dev/<project_id>/<repository_id>`
-   - Eg: `gcloud artifacts docker images list us-west2-docker.pkg.dev/my_project/my_repository`
-   - You can also view it online in the Artifact Registry
+8. To see the logs of the pods you can use the following command `kubectl logs <pod-name>` or `kubectl logs -f <pod-name>` to watch the logs live
 
-## Create Deployment
+### Troubleshooting
 
-1. In `server/k8_files/01/server_deployment.yaml` you'll need to update the image with the one you just created/pushed to gCloud.
-2. Deploy the yaml files in server/k8_files/01
-   ```
-   kubectl apply -f server/k8_files/01/server_deployment.yaml
-   kubectl apply -f server/k8_files/01/server_loadbalancer.yaml
-   kubectl apply -f server/k8_files/01/server_secrets.yaml
-   ```
-   - Optionally you can deploy the whole folder via: `kubectl apply -f server/k8_files/01`
-3. To later delete the k8 objects in gCloud you can run the same commands but change `apply` -> `delete`
-
-### Explanation
-
-- The `server_deployment.yaml` is what will actually create + deploy the k8-mini-app in gCloud. It determines how many pods will be created, what image and port is to be used, and any non-sensitive environment variables you want. Feel free to add more.
-- The `server_loadbalancer.yaml` is what makes the deployment publicly accessible.
-- The `server_secrets.yaml` is where you would normally store sensitive data (db password, api keys, etc). Feel free to add more.
-
-## Test the deployment
-
-1. `kubectl get all` will get all the objects you've created. You'll see something like this
+If your running Windows and WSL2 and you're getting this error while trying to build a docker image:
 
 ```
-$kubectl get all
-NAME                                      READY   STATUS    RESTARTS   AGE
-pod/k8-mini-app-server-594f55947b-xlb2q   1/1     Running   0          6m20s
-pod/k8-mini-app-server-594f55947b-psvbh   1/1     Running   0          6m20s
-
-NAME                               TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)          AGE
-service/k8-mini-app-loadbalancer   LoadBalancer   10.108.8.200   35.233.156.20   8080:32719/TCP   24m
-service/kubernetes                 ClusterIP      10.108.0.1     <none>          443/TCP          7d
-
-NAME                                 READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/k8-mini-app-server   2/2     2            2           25m
-
-NAME                                            DESIRED   CURRENT   READY   AGE
-replicaset.apps/k8-mini-app-server-594f55947b   2         2         2       6m25s
+ERROR: failed to solve: golang:latest: error getting credentials - err: fork/exec /usr/bin/docker-credential-desktop.exe: exec format error, out: ``
 ```
 
-2. The number of pods created will depend on how many you set in the `server/k8_files/01/server_deployment.yaml`
-3. `service/kubernetes` is a default object that will exist pre/post creating/deleting everything
-4. You’ll notice on the service (`service/k8-mini-app-loadbalancer`) that an EXTERNAL-IP was created (takes a few moments). You can now use this to access your application. You’ll notice if you go to the `/pod` route it will return the name one of the pods! Using `curl` is the best for this as your browser might cache the request and thus return the same response.
-
-```
-$ curl http://35.233.156.20
-Hello, From K8 Mini App ouo <3
-$ curl http://35.233.156.20/pod
-k8-mini-app-server-594f55947b-xlb2q
-$ curl http://35.233.156.20/pod
-k8-mini-app-server-594f55947b-psvbh
-```
-
-5. Going to `/secrets` will return the values you put in the `server_secrets.yaml`. It will also log all of the environment variables in the pod. To see these logs you can use the following:
-   - `kubectl logs <pod-name>` or `kubectl logs -f <pod-name>` to watch the logs live
-
-## Making Changes
-
-Here is how you can update and add to the `main.go` file.
-
-1. Make changes to the Go app
-2. Build docker image
-   - `docker build --tag <gcloud-image_name> .`
-   - eg. `docker build --tag us-west2-docker.pkg.dev/my_project/my_repository/k8-mini-app .`
-3. Push to gCloud
-   - eg. `docker push <gcloud-image_name>`
-   - eg. `docker push us-west2-docker.pkg.dev/my_project/my_repository/k8-mini-app`
-4. Update deployment image
-   - `kubectl set image deployment <deployment_name> <container_name>=<gcloud-image_name>:<tag>`
-   - eg. `kubectl set image deployment k8-mini-app-server server=us-west2-docker.pkg.dev/my_project/my_repository/k8-mini-app:latest`
-   - Using `latest` for the tag here is the important part. This will make sure it looks at the newest image.
-   - The `<deployment_name>` and `<container_name>` are what we specified in the `server_deployment.yaml` file.
-   - This doesn't seem to be 100% consistent (probably because the tag isn't changing). If it doesn't work you can restart the deployment: `kubectl rollout restart deployment k8-mini-app-server`
-5. It will be a few seconds to update the pods
+Delete the line with `credsStore` from `~/.docker/config.json`. See this [stack overflow](https://stackoverflow.com/questions/65896681/exec-docker-credential-desktop-exe-executable-file-not-found-in-path) thread.
 
 ## Suggestions
 
-*Easy*
-- Add new enviroment variables to `server_deployment.yaml`
-- Add new secrets to `server_secrets.yaml`
-- Add an additional route that returns some data.
+_Easy_
+
+- Update the `server_deployment.yaml` to create a single pod. Then follow the logs of that pod. Finally go to `/secrets` and you should see a list of all the enviroment variables that exist. 
+
+_Medium_
+
+- Update the deployment to use a specific port (ie. `localhost:8080`)

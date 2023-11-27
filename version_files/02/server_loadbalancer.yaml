@@ -5,7 +5,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector: 
-    # This selects the deployment to use (thus must match pec.selector.matchLabels.app of the deployment)
+    # This selects the deployment to use (thus must match spec.selector.matchLabels.app of the deployment)
     app: k8-mini-app-server
   ports: 
     - port: 80 # Service Port
