@@ -8,5 +8,10 @@ COPY . .
 RUN npm run build
 
 FROM nginx
-EXPOSE 80
+
 COPY --from=build /client/build /usr/share/nginx/html
+
+# Overwrite the default NGINX configuration file with our custom file
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80

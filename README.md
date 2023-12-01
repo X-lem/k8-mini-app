@@ -15,6 +15,11 @@ Some of the versions will have suggestions at the end on things you can add to h
 ## Version Overviews
 
 * **1**: Locally build a golang application (server) and run it via docker/kubernetes with minikube.
-* **1.5** Launch the golang application to gCloud kuberbetes
-* **2**: Add a DB
-* **3**: Add the front end (client). Run the application locally via docker
+* **2** Launch the golang application to gCloud kuberbetes
+* **3**: Add a DB
+* **4**: Adding a front end (client). Running locally via docker compose and launching to gCloud
+* **5**: Using ingress to handle traffic (WIP)
+
+## What is Docker?
+
+## What is Kubernetes?

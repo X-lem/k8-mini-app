@@ -14,10 +14,11 @@ spec:
     spec:
       containers:
         - name: server
-          image:  # your image here
-          imagePullPolicy: Always
+          image: k8-mini-app-server # your image here
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080
+              name: http-client
           env:
             # Import variable from the pods
             - name: POD_NAME
@@ -25,6 +26,21 @@ spec:
                 fieldRef:
                   # this gets the pod name so we can return it via the /pod route
                   fieldPath: metadata.name
+            - name: postgres-service-name
+              value: postgres-svc # this is the name that we've listed for the postgres service (metadata.name)
           envFrom:
             - secretRef:  
                 name: server-secrets
+---
+# Server service
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8-mini-app-server
+spec:
+  type: NodePort
+  selector:
+    name: k8-mini-app-server
+  ports:
+    - port: 80
+      targetPort: http-client

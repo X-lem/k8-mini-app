@@ -1,0 +1,35 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: k8-mini-app-client
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: k8-mini-app-client
+  template:
+    metadata:
+      labels:
+        app: k8-mini-app-client
+    spec:
+      containers:
+        - name: client
+          image: # your image here
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http-client
+---
+# The load balancer references the client
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8-mini-app-client-loadbalancer
+spec:
+  type: LoadBalancer
+  selector: 
+    # This selects the deployment to use (thus must match spec.selector.matchLabels.app of the deployment)
+    app: k8-mini-app-client
+  ports: 
+    - port: 80 # Service Port
+      targetPort: http-client # this references the client deployment pod ports.name

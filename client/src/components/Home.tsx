@@ -12,7 +12,7 @@ const Home: React.FC = () => {
   const fetchUsers = () => {
     console.log("fetching users");
     axiosReq
-      .get("http://localhost:8080/users")
+      .get(`/api/users`)
       .then((res) => {
         console.log("res", res);
         setUsers(res.data);
@@ -26,7 +26,7 @@ const Home: React.FC = () => {
   const createUsersTable = () => {
     console.log("creating user table");
     axiosReq
-      .post("http://localhost:8080/create-table")
+      .post(`/api/create-table`)
       .then(() => alert("table created!"))
       .catch((err) => {
         console.log("err", err);

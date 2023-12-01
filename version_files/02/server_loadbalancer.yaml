@@ -4,9 +4,9 @@ metadata:
   name: k8-mini-app-loadbalancer
 spec:
   type: LoadBalancer
-  selector: 
+  selector:
     # This selects the deployment to use (thus must match spec.selector.matchLabels.app of the deployment)
     app: k8-mini-app-server
-  ports: 
+  ports:
     - port: 80 # Service Port
       targetPort: 8080 # Container Port

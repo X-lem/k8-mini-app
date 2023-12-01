@@ -10,7 +10,7 @@ const CreateUser: React.FC = () => {
     
     console.log(`Creating user: ${username}`);
     axiosReq
-      .post("http://localhost:8080/user", {username: username})
+      .post(`/api/user`, {username: username})
       .then((res) => {
         console.log("res", res);
         alert("User created! " + res.data.toString())

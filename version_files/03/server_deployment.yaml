@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: server
-          image:  # your image here
+          image: # your image here
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -25,6 +25,8 @@ spec:
                 fieldRef:
                   # this gets the pod name so we can return it via the /pod route
                   fieldPath: metadata.name
+            - name: postgres-service-name
+              value: postgres-svc # this is the name that we've listed for the postgres service (metadata.name)
           envFrom:
             - secretRef:  
                 name: server-secrets

@@ -1,0 +1,80 @@
+#### This yaml file is treated as 4 separate yaml files (separated by ---) ####
+
+## Persistent Volume Claim (PVC)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pv-claim
+  labels:
+    app: postgres
+spec:
+  # You may need to update this to use a storage class your cluster actually has.
+  # Use the command `kubectl get sc` to see all the storage classes available in your cluster
+  # Specifying this will automatically create the Persistent Volume (PV)
+  storageClassName: premium-rwo
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+## Postgres Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-svc
+  labels:
+    app: postgres
+spec:
+  type: NodePort
+  ports:
+    - port: 5432
+  selector:
+    app: postgres
+---
+## Postgres config map
+# This will run and create the postgres db as well as the user/password we can connect with
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    app: postgres
+data:
+  POSTGRES_DB: k8-mini-app
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: securePassword
+---
+### Postgres deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          # See https://hub.docker.com/_/postgres/ for other versions of postgres that you can use
+          image: postgres:16.1
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql
+              name: postgredb
+      volumes:
+        - name: postgredb
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
