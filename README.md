@@ -12,14 +12,16 @@ In each of the versions folder there will be a `versionXX.md` file that will sho
 
 Some of the versions will have suggestions at the end on things you can add to help you learn.
 
-## Version Overviews
+### Version Overviews
 
-* **1**: Locally build a golang application (server) and run it via docker/kubernetes with minikube.
-* **2** Launch the golang application to gCloud kuberbetes
-* **3**: Add a DB
-* **4**: Adding a front end (client). Running locally via docker compose and launching to gCloud
-* **5**: Using ingress to handle traffic (WIP)
+1. Locally build a golang application (server) and run it via docker/kubernetes with minikube.
+2. Launch the golang application to gCloud kuberbetes
+3. Add a DB
+4. Adding a front end (client). Running locally via docker compose and launching to gCloud
+5. Using ingress to handle traffic (WIP)
 
-## What is Docker?
+## Resources
 
-## What is Kubernetes?
+- K8 yaml guides
+  - https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/
+  - https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#workloads-apis (has examples)

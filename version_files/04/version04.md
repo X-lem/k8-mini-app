@@ -17,16 +17,14 @@ In this version we will add the front end client. We'll run the application loca
 
 ## Running via Docker
 
-In this version we're only going to be running things locally via Docker. This is because we're adding the `./client`. The client is a simple react application that allows you to make the DB requests via a UI.
-
-To do this take a look at the `./docker-compose.yaml` file. This file has 3 docker services.
+None of the yaml files here are used for the docker setup. All we need to do is build the docker images. To do that we're going to use the `docker-compose.yaml` file in the root of our project. If you take a look at the file you'll notice it has 3 docker services.
 
 1. server
-   - The server you should already be familiar with. It functions exactly the same as it has previously. Instead of building the server/Dockerfile directly we allow the docer-compose file to do it. We've added a `depends_on` to ensure that the DB service is up and running prior to the server. Because we've added the condition `condition: service_healthy` the db service needs the `healthcheck` parameters.
+   - The server you should already be familiar with. It functions exactly the same as it has previously. Instead of building the server/Dockerfile directly we allow the docer-compose file to do it. We've added a `depends_on` to ensure that the DB service is up and running prior to the server. Because we've added the condition `condition: service_healthy` the db service needs the `healthcheck` parameters. As previously we're running the server on port 8080.
 2. client
-   - The client is new. Like the `./server/Dockerfile` the `./client/Dockerfile` is responsible for creating the Docker image. It builds the react application than uses nginx set it up so we can access it on port 80. The docker-file then forwards our local 3000 port to the docker port.
+   - The client is the new application. Like the `./server/Dockerfile` the `./client/Dockerfile` is responsible for creating the Docker image. It builds the react application than uses nginx set it up so we can access it on port 80. The docker-compose file then forwards our local 3000 port to the docker port.
 3. db
-   - The DB is fairly simple. It's pulling the postgres image from [dockerhub] (https://hub.docker.com/_/postgres/) and creating the `k8-mini-app` database. Notice the `healthcheck`. Every 2 seconds the **test** is run. If after 20 seconds or 5 failed attempt the health check will be concidered `unhealth`. Feel free to change these if you're using a slower computer that needs more time to load up the db service. See [healthcheck](https://docs.docker.com/engine/reference/builder/#healthcheck) documentation for more information.
+   - The DB is fairly simple. It's pulling the postgres image from [dockerhub] (https://hub.docker.com/_/postgres/) and creates the `k8-mini-app` database. Notice the `healthcheck`. Every 2 seconds the **test** is run. If after 20 seconds or 5 failed attempt the health check will be concidered unhealthly. Feel free to change these if you're using a slower computer that needs more time to load up the db service. See [healthcheck](https://docs.docker.com/engine/reference/builder/#healthcheck) documentation for more information.
 
 ### Starting the services
 
@@ -76,6 +74,8 @@ To delete the containers you can run `docker-compose down`. You'll get an output
  ✔ Network k8-mini-app_default     Removed
 ```
 
+**WARNING**: This will delete the database along with all its data.
+
 ## Pushing to gCloud
 
 You'll notice some difference now from the previous application we pushed to gCloud. The load balancer that creates the external IP is now pointed to the client instead of the server. The server has it's own Service of the default type ClusterIP. This assigns the pods an IP address, but doesn't create an external IP. So you can access the server directly. Take a look at the file `/client/nginx.config`. This routes the traffic to either the client or the server. Any request that starts with `/api` is routed to the server service. To apply this nginx we have to apply it (see `/client/Dockerfile`).
@@ -102,14 +102,12 @@ The process to do this is much the same as it was in the earlier version.
 
 4. Access the application using the external IP created by the load balancer
 
-**WARNING**: This will delete the database along with all its data.
-
 ## Suggestions
 
 _Easy_
 
 - Add to the client application a way for the user to update/delete a user (hint, you may need to udpate your cors headers)
-- If you own a domain name, create a DNS record to point to the External IP address (note it might not take effect immediatly). Then access the site from <your-domain>.com
+- If you own a domain name (and running the application on gCloud), create a DNS record to point to the External IP address (note it might not take effect immediatly). Then access the site from <your-domain>.com
 
 _Medium_
 

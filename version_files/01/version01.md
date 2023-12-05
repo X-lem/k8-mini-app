@@ -17,12 +17,6 @@ Creating a simple kubernetes application and deploying it locally with dock and 
 
 If the installation was sucessful you should see `minikube` show up under **Containers** in Docker Desktop. Note, you'll need to run `minikube start`
 
-## Resources
-
-- K8 yaml guides
-  - https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/
-  - https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#workloads-apis (has examples)
-
 ## Running via Docker
 
 The `Dockerfile` is what is used to generate the docker image of the golang code. Take a look through the code/Dockerfile The following instructions
