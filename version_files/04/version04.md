@@ -24,7 +24,7 @@ None of the yaml files here are used for the docker setup. All we need to do is 
 2. client
    - The client is the new application. Like the `./server/Dockerfile` the `./client/Dockerfile` is responsible for creating the Docker image. It builds the react application than uses nginx set it up so we can access it on port 80. The docker-compose file then forwards our local 3000 port to the docker port.
 3. db
-   - The DB is fairly simple. It's pulling the postgres image from [dockerhub] (https://hub.docker.com/_/postgres/) and creates the `k8-mini-app` database. Notice the `healthcheck`. Every 2 seconds the **test** is run. If after 20 seconds or 5 failed attempt the health check will be concidered unhealthly. Feel free to change these if you're using a slower computer that needs more time to load up the db service. See [healthcheck](https://docs.docker.com/engine/reference/builder/#healthcheck) documentation for more information.
+   - The DB is fairly simple. It's pulling the postgres image from [dockerhub](https://hub.docker.com/_/postgres/) and creates the `k8-mini-app` database. Notice the `healthcheck`. Every 2 seconds the **test** is run. If after 20 seconds or 5 failed attempt the health check will be concidered unhealthly. Feel free to change these if you're using a slower computer that needs more time to load up the db service. See [healthcheck](https://docs.docker.com/engine/reference/builder/#healthcheck) documentation for more information.
 
 ### Starting the services
 

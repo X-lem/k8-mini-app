@@ -14,11 +14,11 @@ spec:
     spec:
       containers:
         - name: server
-          image: k8-mini-app-server # your image here
-          imagePullPolicy: Never
+          image: # your image here
+          imagePullPolicy: Always
           ports:
-            - containerPort: 8080
-              name: http-client
+            - containerPort: 80
+              name: http-server
           env:
             # Import variable from the pods
             - name: POD_NAME
@@ -36,11 +36,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: k8-mini-app-server
+  name: k8-mini-app-server-service
 spec:
   type: NodePort
   selector:
-    name: k8-mini-app-server
+    app: k8-mini-app-server
   ports:
     - port: 80
-      targetPort: http-client
+      targetPort: http-server

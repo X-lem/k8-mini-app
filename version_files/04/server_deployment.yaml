@@ -17,7 +17,7 @@ spec:
           image:  # your image here
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 80
               name: http-server
           env:
             # Import variable from the pods
@@ -32,7 +32,7 @@ spec:
             - secretRef:  
                 name: server-secrets
 ---
-# Client service (so that the server can be access - in this case by the client)
+# Server service (so that the server can be access - in this case by the client)
 apiVersion: v1
 kind: Service
 metadata:
@@ -41,5 +41,5 @@ spec:
   selector:
     app: k8-mini-app-server
   ports:
-    - port: 8080
+    - port: 80
       targetPort: http-server # this references the server deployment pod ports.name

@@ -18,7 +18,7 @@ Some of the versions will have suggestions at the end on things you can add to h
 2. Launch the golang application to gCloud kuberbetes
 3. Add a DB
 4. Adding a front end (client). Running locally via docker compose and launching to gCloud
-5. Using ingress to handle traffic (WIP)
+5. Using ingress to handle traffic (WIP - currently not working. Current best guess is the `/client/Dockerfile.v05` isn't starting up the client properly. Ingress also isn't finding the server it seems)
 
 ## Resources
 
