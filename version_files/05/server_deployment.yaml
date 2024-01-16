@@ -38,7 +38,7 @@ kind: Service
 metadata:
   name: k8-mini-app-server-service
 spec:
-  type: NodePort
+  type: ClusterIP # This is the default type so this line is technically not needed
   selector:
     app: k8-mini-app-server
   ports:

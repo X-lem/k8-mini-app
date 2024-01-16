@@ -8,8 +8,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - http:
-        # host: # If you own a domain name uncomment this and add it here
+    - host:  # If you own a domain name add it here
+      http:
         paths:
           - path: /(/|$)(.*)
             pathType: ImplementationSpecific
